@@ -1,288 +1,172 @@
-import numpy as  np
-from random import randint
-from copy import deepcopy
+import random
 from math import sqrt
-def super_turbo_avto_fill_matrix(a):
-    for i in range(len(a)):
-        a[i].append(a[i][0] * a[i][1])
-        a[i].append(a[i][0] * a[i][2])
-        a[i].append(a[i][1] * a[i][2])
-        a[i].append(a[i][0] * a[i][1] * a[i][2])
-        a[i].append(a[i][0] ** 2)
-        a[i].append(a[i][1] ** 2)
-        a[i].append(a[i][2] ** 2)
-    return a
-def anreal_quick_fill_matrix(a, x):
-    a1 = []
-    for i in range(len(a)):
-        a1.append([])
-        for j in range(3):
-            a1[i].append(0)
-    for i in range(len(a)):
-        for j in range(3):
-            if a[i][j] == -1:
-                a1[i][j] = (min(x[j]))
-            elif a[i][j] == 1:
-                a1[i][j] = (max(x[j]))
-            else:
-                a1[i][j] = (x[j][0] + x[j][1]) / 2 + a[i][j] * (x[j][1] - ((x[j][0] + x[j][1]) / 2))
-    super_turbo_avto_fill_matrix(a1)
-    return a1
-x1min = -1
-x1max = 4
-x2min = -3
-x2max = 6
-x3min = -1
-x3max = 9
-xmatrix = [[x1min, x1max], [x2min, x2max], [x3min, x3max]]
-ymax = 200 + (x3max + x2max + x1max) / 3
-ymin = 200 + (x3min + x2min + x1min) / 3
-matrixplan = [[-1, -1, -1],
-              [-1, -1, 1],
-              [-1, 1, -1],
-              [-1, 1, 1],
-              [1, -1, -1],
-              [1, -1, 1],
-              [1, 1, -1],
-              [1, 1, 1],
-              [-1.215, 0, 0],
-              [1.215, 0, 0],
-              [0, -1.215, 0],
-              [0, 1.215, 0],
-              [0, 0, -1.215],
-              [0, 0, 1.215],
-              [0, 0, 0]]
-matrixplan = super_turbo_avto_fill_matrix(matrixplan)
-matrixnatural = anreal_quick_fill_matrix(matrixplan, xmatrix)
-
-def lab(m, good_plan, natural, ymax, ymin):
-    if m - 1 == 2:
-        Gt = 0.3346
-    elif m - 1 == 3:
-        Gt = 0.2758
-    elif m - 1 == 4:
-        Gt = 0.2419
-    elif m - 1 == 5:
-        Gt = 0.2159
-    elif m - 1 == 6:
-        Gt = 0.2034
-    elif m - 1 == 7:
-        Gt = 0.1911
-    elif m - 1 == 8:
-        Gt = 0.1815
-    elif m - 1 == 9:
-        Gt = 0.1736
-    elif (((m - 1) > 10) and ((m - 1) < 16)):
-        Gt = 0.1671
-    elif (((m - 1) > 16) and ((m - 1) < 36)):
-        Gt = 0.1429
-    elif (((m - 1) > 36) and ((m - 1) < 144)):
-        Gt = 0.1144
-    elif (m - 1) > 144:
-        Gt = 0.0889
-    for j in range(len(good_plan)):
-        for i in range(len(good_plan[14]), m + 10):
-            natural[j].append(randint(int(ymin), int(ymax)))
-            good_plan[j].append(randint(int(ymin), int(ymax)))
-    ysplist = []
-    for i in range(len(good_plan)):
-        ysp = 0
-        for j in range(10, len(good_plan[0])):
-            ysp = ysp + good_plan[i][j]
-        ysp = ysp / m
-        ysplist.append(ysp)
-    S2ylist = []
-    S2ysum = 0
-    for i in range(len(good_plan)):
-        S2y = 0
-        for j in range(10, len(good_plan[0])):
-            S2y = S2y + (good_plan[i][j] - ysplist[i]) ** 2
-        S2y = S2y / m
-        S2ylist.append(S2y)
-        S2ysum = S2ysum + S2y
-    Gp = max(S2ylist) / S2ysum
-    if Gp > Gt:
-        m = m + 1
-        lab((m, good_plan, natural, ymax, ymin))
-    else:
-        deepcool_natural = deepcopy(natural)
-        for i in range(len(deepcool_natural)):
-            deepcool_natural[i].insert(0, 1)
-        rl = []
-        for z in range(11):
-            k0l = []
-            for u in range(11):
-                k0 = 0
-                for i in range(15):
-                    k0 = k0 + deepcool_natural[i][z] * deepcool_natural[i][u]
-                    k0 = k0
-                k0l.append(k0)
-            rl.append(k0l)
-        det0 = np.linalg.det(rl)
-        yklist = []
-    for j in range(11):
-        yk = 0
-        for i in range(15):
-            yk = yk + ysplist[i] * deepcool_natural[i][j]
-        yklist.append(yk)
-    detlist = []
-    for j in range(11):
-        v = deepcopy(rl)
-        for i in range(11):
-            v[i][j] = yklist[i]
-        detlist.append(np.linalg.det(v))
-    blist = []
-    for i in range(len(detlist)):
-        blist.append(detlist[i] / det0)
-    S2B = S2ysum / 15
-    S2b = S2B / (15 * m)
-    Sb = sqrt(S2b)
-    very_good_plan = deepcopy(good_plan)
-    for i in range(len(very_good_plan)):
-        very_good_plan[i].insert(0, 1)
-    rl = []
-    for z in range(11):
-        k0l = []
-        for u in range(11):
-            k0 = 0
-            for i in range(15):
-                k0 = k0 + very_good_plan[i][z] * very_good_plan[i][u]
-                k0 = k0
-            k0l.append(k0)
-        rl.append(k0l)
-    det0 = np.linalg.det(rl)
-    yklist = []
-    for j in range(11):
-        yk = 0
-        for i in range(15):
-            yk = yk + ysplist[i] * very_good_plan[i][j]
-        yklist.append(yk)
-    detlist = []
-    for j in range(11):
-        v = deepcopy(rl)
-        for i in range(11):
-            v[i][j] = yklist[i]
-        detlist.append(np.linalg.det(v))
-    tlist = []
-    for i in range(len(detlist)):
-        tlist.append(abs(detlist[i] / det0) / Sb)
-    sumt = 0
-    bultlist = []
-    for i in range(len(tlist)):
-        if tlist[i] >= 2.042:
-            bultlist.append(1)
-            sumt = sumt + 1
-        elif tlist[i] < 2.042:
-            bultlist.append(0)
-    ynewlist = []
-    for j in range(15):
-        ynew = 0
-        for i in range(11):
-            if bultlist[i] == 1:
-                ynew = ynew + blist[i] * deepcool_natural[j][i]
-        ynewlist.append(ynew)
-    if (((m - 1) * 15 >= 30) and ((m - 1) * 15 < 40)):
-        if (15 - sumt) == 1:
-            Ft = 4.2
-        elif (15 - sumt) == 2:
-            Ft = 3.3
-        elif (15 - sumt) == 3:
-            Ft = 2.9
-        elif (15 - sumt) == 4:
-            Ft = 2.7
-        elif (15 - sumt) == 5:
-            Ft = 2.5
-        elif ((15 - sumt) >= 6 and (15 - sumt) < 12):
-            Ft = 2.4
-        elif ((15 - sumt) >= 12 and (15 - sumt) < 24):
-            Ft = 2.1
-        elif ((15 - sumt) >= 24):
-            Ft = 1.9
-    elif (((m - 1) * 15 >= 40) and ((m - 1) * 15 < 60)):
-        if (15 - sumt) == 1:
-            Ft = 4.1
-        elif (15 - sumt) == 2:
-            Ft = 3.2
-        elif (15 - sumt) == 3:
-            Ft = 2.9
-        elif (15 - sumt) == 4:
-            Ft = 2.6
-        elif (15 - sumt) == 5:
-            Ft = 2.5
-        elif ((15 - sumt) >= 6 and (15 - sumt) < 12):
-            Ft = 2.3
-        elif ((15 - sumt) >= 12 and (15 - sumt) < 24):
-            Ft = 2.0
-        elif ((15 - sumt) >= 24):
-            Ft = 1.8
-    elif (((m - 1) * 15 >= 60) and ((m - 1) * 15 < 120)):
-        if (15 - sumt) == 1:
-            Ft = 4.0
-        elif (15 - sumt) == 2:
-            Ft = 3.2
-        elif (15 - sumt) == 3:
-            Ft = 2.8
-        elif (15 - sumt) == 4:
-            Ft = 2.5
-        elif (15 - sumt) == 5:
-            Ft = 2.4
-        elif ((15 - sumt) >= 6 and (15 - sumt) < 12):
-            Ft = 2.3
-        elif ((15 - sumt) >= 12 and (15 - sumt) < 24):
-            Ft = 1.9
-        elif ((15 - sumt) >= 24):
-            Ft = 1.7
-    elif (((m - 1) * 15 >= 120)):
-        if (15 - sumt) == 1:
-            Ft = 3.9
-        elif (15 - sumt) == 2:
-            Ft = 3.1
-        elif (15 - sumt) == 3:
-            Ft = 2.7
-        elif (15 - sumt) == 4:
-            Ft = 2.5
-        elif (15 - sumt) == 5:
-            Ft = 2.3
-        elif ((15 - sumt) >= 6 and (15 - sumt) < 12):
-            Ft = 2.2
-        elif ((15 - sumt) >= 12 and (15 - sumt) < 24):
-            Ft = 1.8
-        elif ((15 - sumt) >= 24):
-            Ft = 1.6
-    Sad = 0
-    for i in range(15):
-        Sad = Sad + ((ynewlist[i] - ysplist[i]) ** 2) * m / (15 - sumt)
-    Fp = Sad / S2B
-    for i in range(len(good_plan)):
-        for j in range(len(good_plan[i])):
-            if type(good_plan[i][j]) == float:
-                if good_plan[i][j] != 0:
-                    good_plan[i][j] = '%.3f' % good_plan[i][j]
-                if (good_plan[i][j] == 0.0 or good_plan[i][j] == -0.0):
-                    good_plan[i][j] = 0
-            good_plan[i][j] = ('%+6s' % good_plan[i][j])
-        print(good_plan[i])
-    xlist = [" ", "*X1", "*X2", "*X3", "*X12", "*X13", "*X23", "*X123", "*X1^2", "*X2^2", "*X3^2"]
-    text3 = "y = "
-    blist1 = [str('%.3f' % blist[0]), "  +  " + str('%.3f' % blist[1]), "  +  " +
-          str('%.3f' % blist[2]), "  +  " + str('%.3f' % blist[3]),
-          "  +  " + str('%.3f' % blist[4]), "  +  " + str('%.3f' % blist[5]), "  +  "
-          + str('%.3f' % blist[6]),
-          "  +  " + str('%.3f' % blist[7]), "  +  " + str('%.3f' % blist[8]), "  +  " +
-          str('%.3f' % blist[9]), "  +  " + str('%.3f' % blist[10]), ]
-    for i in range(len(xlist)):
-        text3 = text3 + (blist1[i]) + xlist[i]
-    text4 = "y = "
-    for i in range(len(xlist)):
-        if bultlist[i] == 1:
-            text4 = text4 + (blist1[i]) + xlist[i]
-    print(text3)
-    print("Диспесія  однорідна")
-    print(text4)
-    if Fp < Ft:
-        print("Рівняння  регресії  адекватне  оригіналу")
-    elif Fp > Ft:
-        print("Рівняння  регресії  неадекватне  оригіналу")
+import scipy.stats
 m = 3
-lab(m, matrixplan, matrixnatural, ymax, ymin)
+for i in range(100):
+    def proga(m):
+        x1max = 70
+        x1min = 20
+        x2max = 40
+        x2min = -20
+        x3max = 80
+        x3min = 70
+        xcpmax=(x1max + x2max + x3max) / 3
+        xcpmin = (x1min + x2min + x3min) / 3
+        ymax = 200 + xcpmax
+        ymin = 200 + xcpmin
+        amatrix = [[-1, -1, -1, 1, 1, 1, -1],
+                   [-1, -1, 1, 1, -1, -1, 1],
+                   [-1, 1, -1, -1, 1, -1, 1],
+                   [-1, 1, 1, -1, -1, 1, -1],
+                   [1, -1, -1, -1, -1, 1, 1],
+                   [1, -1, 1, -1, 1, -1, -1],
+                   [1, 1, -1, 1, -1, -1, -1],
+                   [1, 1, 1, 1, 1, 1, 1]]
+        for i in range(m):
+            for j in range(len(amatrix)):
+                amatrix[j].append(random.randint(int(ymin), int(ymax)))
+        b0 = 0
+        b1 = 0
+        b2 = 0
+        b3 = 0
+        b12 = 0
+        b13 = 0
+        b23 = 0
+        b123 = 0
+        for i in range(8):
+            yi = 0
+            for j in range(len(amatrix[0]) - m, len(amatrix[0])):
+                yi = yi + amatrix[i][j] / m
+            b0 = b0 + yi / 8
+            b1 = b1 + yi * amatrix[i][0] / 8
+            b2 = b2 + yi * amatrix[i][1] / 8
+            b3 = b3 + yi * amatrix[i][2] / 8
+            b12 = b12 + yi * amatrix[i][3] / 8
+            b13 = b13 + yi * amatrix[i][4] / 8
+            b23 = b23 + yi * amatrix[i][5] / 8
+            b123 = b123 + yi * amatrix[i][6] / 8
+        blist = [b0, b1, b2, b3, b12, b13, b23, b123]
+        text0 = "y  =  " + str('%.3f' % b0) + "  +  " + str('%.3f' % b1) + "*X1  +  " + str('%.3f' % b2) + "*X2  +"+str('%.3f'  %b3)+" * X3 + "+str('%.3f'  %b12)+" * X12 + "+str('%.3f'  %b13)+" * X13 +"+str('%.3f'  %b23)+" * X23 + "+str('%.3f'  %b123)+"* X123"
+        for i in range(8):
+            print(amatrix[i])
+        print('Рівняння регресії:')
+        print(text0)
+        ynlist = []
+        for i in range(8):
+            yn = 0
+            for j in range(len(amatrix[0]) - m, len(amatrix[0])):
+                yn = yn + amatrix[i][j]
+            yn = yn / m
+            ynlist.append(yn)
+        S2ylist = []
+        S2ysum = 0
+        for i in range(8):
+            S2y = 0
+            for j in range(len(amatrix) - m, len(amatrix)):
+                S2y = S2y + ((amatrix[i][j] - ynlist[i]) ** 2) / m
+            S2ylist.append(S2y)
+            S2ysum = S2ysum + S2y
+        Gp = max(S2ylist) / S2ysum
+        print('Gp =', Gp)
+        Gt = 0.5157
+        print('Gt =', Gt)
+        k = 0
+        l = 0
+        if Gp < Gt:
+            print("Gp < Gt, а отже дисперсія  однорідна")
+            k = k + 1
+        else:
+            proga(m + 1)
+            l = l + 1
+        S2b = S2ysum / 8
+        S2B = S2b / (8 * m)
+        SB = sqrt(S2B)
+        for i in range(8):
+            yi = 0
+            for j in range(len(amatrix[0]) - m, len(amatrix[0])):
+                yi = yi + amatrix[i][j] / m
+            b0 = b0 + yi / 8
+            b1 = b1 + yi * amatrix[i][0] / 8
+            b2 = b2 + yi * amatrix[i][1] / 8
+            b3 = b3 + yi * amatrix[i][2] / 8
+            b12 = b12 + yi * amatrix[i][3] / 8
+            b13 = b13 + yi * amatrix[i][4] / 8
+            b23 = b23 + yi * amatrix[i][5] / 8
+            b123 = b123 + yi * amatrix[i][6] / 8
+        t0 = abs(b0) / SB
 
+        t1 = abs(b1) / SB
+        t2 = abs(b2) / SB
+        t3 = abs(b3) / SB
+        t4 = abs(b12) / SB
+        t5 = abs(b13) / SB
+        t6 = abs(b23) / SB
+        t7 = abs(b123) / SB
+        tlist = [t0, t1, t2, t3, t4, t5, t6, t7]
+        ttabl = 2.120
+        a = []
+        d = 0
+        for i in range(len(tlist)):
+            if tlist[i] > ttabl:
+                a.append(1)
+                d = d + 1
+            else:
+                a.append(0)
+        yslist = []
+        for i in range(len(amatrix)):
+            ysn = 0
+            if a[0] == 1:
+                ysn = tlist[0]
+            for z in range(6):
+                for j in range(7):
+                    if a[z + 1] == 1:
+                        ysn = ysn + amatrix[i][j] * blist[z + 1]
+            yslist.append(ysn)
+        tlist2 = ["  ", "*X1", "*X2", "*X3", "*X12", "*X13", "*X23", "*X123"]
+        text3 = "y  =  "
+        blist1 = [str('%.3f' % b0), "  +  " + str('%.3f' % b1), "  +  " + str('%.3f' % b2), "  +  " + str('%.3f' % b3),"  +  "
+    + str('%.3f' % b12), "  +  " + str('%.3f' % b13), "  +  " + str('%.3f' % b23), "  +"+str('%.3f'  %b123)]
+        for i in range(len(tlist2)):
+            if a[i] == 1:
+                text3 = text3 + (blist1[i]) + tlist2[i]
+        print(text3)
+        f4 = 8 - d
+        f3 = 8 * (m - 1)
+        sad = 0
+        for i in range(len(yslist)):
+            sad = sad + (yslist[i] - ynlist[i]) ** 2
+        sad = (sad / f4) * 3
+        Fp = sad / S2b
+        if m == 3:
+            fisher = [4.5, 3.6, 3.2, 3.0, 2.9, 2.7, 2.4]
+        if m == 4:
+            fisher = [4.5, 3.4, 3.0, 2.8, 2.6, 2.5, 2.2]
+        if m == 5:
+            fisher = [4.2, 3.3, 2.9, 2.7, 2.5, 2.4, 2.1]
+        if m >= 6:
+            if m <= 8:
+                fisher = [4.1, 3.2, 2.9, 2.6, 2.5, 2.3, 2]
+        if m >= 9:
+            if m <= 15:
+                fisher = [4.0, 3.2, 2.8, 2.5, 2.4, 2.3, 1.9]
+        if m >= 16:
+            fisher = [3.8, 3, 2.6, 2.4, 2.2, 2.1, 1.8]
+        Fg = fisher[f4 - 1]
+        print('Fp =', Fp)
+        print('Fg =', Fg)
+        f = 0
+        n = 0
+        if Fp > Fg:
+            text2 = "Fp > Fg, а отже рівняння  регресії  неадекватне  оригіналу"
+            f = f + 1
+        else:
+            text2 = "Fp < Fg, а отже рівняння  регресії  адекватне  оригіналу"
+            n = n + 1
+        print(text2)
+        zn = 0
+        nzn = 0
+        zn = zn + k + f
+        nzn = nzn + l + n
+        print('Кількість значимих коефіцієнтів: ', zn)
+        print('Кількість незначимих коефіцієнтів: ', nzn)
+    proga(m)
